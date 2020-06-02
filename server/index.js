@@ -6,7 +6,8 @@ const express = require('express'),
     massive = require('massive'),
     {SERVER_PORT, CONNECTION_STRING, SESSION_SECRET} = process.env,
     authCtrl = require('../server/controllers/authController'),
-    treasureCtrl = require('../server/controllers/treasureController')
+    treasureCtrl = require('../server/controllers/treasureController'),
+    auth = require('./middleware/authMiddleware')
 
 massive({
     connectionString: CONNECTION_STRING,
@@ -24,12 +25,20 @@ app.use(session({
     secret: SESSION_SECRET
 }))
 
+//auth endpoints
+
 app.post('/auth/register', authCtrl.register)
 
 app.post('/auth/login', authCtrl.login)
 
 app.get('/auth/logout', authCtrl.logout)
 
+//treasure endpoints
+
 app.get('/api/treasure/dragon', treasureCtrl.dragonTreasure)
+
+app.get('/api/treasure/user', auth.usersOnly, treasureCtrl.getUserTreasure)
+
+app.post('/api/treasure/user', auth.usersOnly, treasureCtrl.addUserTreasure)
 
 app.listen(SERVER_PORT, console.log(`Server connected on ${SERVER_PORT}`))
