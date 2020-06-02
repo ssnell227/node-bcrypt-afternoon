@@ -38,5 +38,9 @@ module.exports = {
             username: user.username
         }
         res.status(200).send(req.session.user)
+    },
+    logout: async (req, res) => {
+        req.session.destroy()
+        res.sendStatus(200)
     }
 }
